@@ -1,0 +1,13 @@
+buildscript {
+    ext {
+        springBootVersion = '3.0.1'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version "$springBootVersion"
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+}
