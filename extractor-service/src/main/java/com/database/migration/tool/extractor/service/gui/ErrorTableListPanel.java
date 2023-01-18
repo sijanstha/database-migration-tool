@@ -1,6 +1,5 @@
 package com.database.migration.tool.extractor.service.gui;
 
-import com.database.migration.tool.extractor.service.ImageResolver;
 import com.database.migration.tool.extractor.service.dbtabledata.ErrorColumnMetaExtractor;
 import com.database.migration.tool.extractor.service.dbtabledata.TableColumnMetaExtractor;
 import com.database.migration.tool.extractor.service.scripts.AppMessage;
@@ -15,11 +14,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ErrorTableListPanel extends JPanel {
 
-    private final JPanel rootPanel;
+    private JPanel rootPanel;
     private JLabel lblErrorTbl;
 
     private JFrame jFrame;
@@ -28,20 +28,18 @@ public class ErrorTableListPanel extends JPanel {
     private int len = 0;
     private JScrollPane js;
     private Utils util;
-    private ArrayList<String> errorTableList;
+    private List<String> errorTableList;
     private ArrayList<String> itemList;
-    private ArrayList<String> colData;
+    private List<String> colData;
     private int index = 0;
     private JButton btnCancel;
-    private final ImageResolver resolver;
 
-    public ErrorTableListPanel(JPanel rootPanel, ImageResolver resolver) {
+    public ErrorTableListPanel(JPanel rootPanel) {
 
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
         setLayout(null);
         this.rootPanel = rootPanel;
-        this.resolver = resolver;
 
         errorTableList = new ErrorColumnMetaExtractor().getTableName("error_log.txt");
 
@@ -70,7 +68,7 @@ public class ErrorTableListPanel extends JPanel {
             }
         });
 
-        
+
         for (int i = 0; i < errorTableList.size(); i++) {
             m1.add(i, errorTableList.get(i));
         }
@@ -102,7 +100,7 @@ public class ErrorTableListPanel extends JPanel {
             util = new Utils(errorTableList.get(index));
             JDialog dialog = new JDialog(jFrame);
             dialog.setTitle("Table containing errors");
-            ImageIcon icon = new ImageIcon(resolver.resolveLogo("logo.jpg"));
+            ImageIcon icon = new ImageIcon("res/logo.jpg");
             dialog.setIconImage(icon.getImage());
             dialog.setBounds(450, 150, 600, 200);
             dialog.setLayout(new BorderLayout());
@@ -156,12 +154,12 @@ public class ErrorTableListPanel extends JPanel {
             // new window for error correction
             button.addActionListener(new ActionListener() {
                 @Override
-                
+
                 public void actionPerformed(ActionEvent e) {
                     ArrayList<String> arrayColValue = new ArrayList<>();
                     AppMessage querySts = null;
                     for (int i = 0; i < colData.size(); i++) {
-                        String tempColVal= "";
+                        String tempColVal = "";
                         // Splitting column values
                         for (int j = 0; j < len; j++) {
 
@@ -197,7 +195,7 @@ public class ErrorTableListPanel extends JPanel {
                         } // end of inner for loop
                         arrayColValue.add(tempColVal);
                     } // end of outer for loop
-                    for(int count = 0;count<arrayColValue.size();count++){
+                    for (int count = 0; count < arrayColValue.size(); count++) {
                         querySts = util.dynSqlQuery(arrayColValue.get(count));
                     }
                     if (querySts.getCODE() == 0) {

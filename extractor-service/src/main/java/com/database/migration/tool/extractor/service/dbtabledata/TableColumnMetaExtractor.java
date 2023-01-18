@@ -1,4 +1,3 @@
-
 package com.database.migration.tool.extractor.service.dbtabledata;
 
 import java.io.BufferedReader;
@@ -55,16 +54,16 @@ public class TableColumnMetaExtractor {
         }
         return columnNames;
     }
-    
-    public ArrayList<String> getTableName(){
-        
+
+    public ArrayList<String> getTableName() {
+
         ArrayList<String> tableNames = new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split("%");
-                    tableNames.add(tokens[0]);
+                tableNames.add(tokens[0]);
             }
             reader.close();
         } catch (Exception ioe) {

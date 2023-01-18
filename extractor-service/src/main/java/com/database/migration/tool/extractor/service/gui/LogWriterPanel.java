@@ -1,7 +1,5 @@
 package com.database.migration.tool.extractor.service.gui;
 
-import com.database.migration.tool.extractor.service.ImageResolver;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AdjustmentEvent;
@@ -10,13 +8,11 @@ import java.io.File;
 
 public class LogWriterPanel extends JPanel {
 
-    private final JPanel rootPanel;
+    private JPanel rootPanel;
     private JTextArea tArea;
     private JScrollPane pane;
-    private final ImageResolver resolver;
 
-    public LogWriterPanel(JPanel rootPanel, ImageResolver resolver) {
-        this.resolver = resolver;
+    public LogWriterPanel(JPanel rootPanel) {
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
         setLayout(null);
@@ -29,12 +25,7 @@ public class LogWriterPanel extends JPanel {
         add(pane);
         tArea.setLineWrap(true);
         tArea.setWrapStyleWord(true);
-        pane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-            }
-
-        });
+        pane.getVerticalScrollBar().addAdjustmentListener(e -> e.getAdjustable().setValue(e.getAdjustable().getMaximum()));
     }
 
     public void writeLog(String s) {
@@ -61,7 +52,7 @@ public class LogWriterPanel extends JPanel {
             } else {
                 System.out.println(input);
                 rootPanel.remove(1);
-                rootPanel.add(new ErrorTableListPanel(null, null), 1);
+                rootPanel.add(new ErrorTableListPanel(rootPanel), 1);
                 rootPanel.repaint();
             }
         }

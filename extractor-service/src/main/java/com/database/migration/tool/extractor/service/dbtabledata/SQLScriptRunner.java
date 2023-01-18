@@ -1,6 +1,5 @@
 package com.database.migration.tool.extractor.service.dbtabledata;
 
-import com.database.migration.tool.extractor.service.ScriptRunner;
 import com.database.migration.tool.extractor.service.dbconnection.MysqlConnect;
 import com.database.migration.tool.extractor.service.scripts.DBMessage;
 
@@ -19,7 +18,7 @@ public class SQLScriptRunner extends Thread {
     private DBMessage dbMsg;
     private Connection con;
     private JPanel rootPanel;
-    
+
     public SQLScriptRunner(JPanel rootPanel) {
         mySqlConnect = new MysqlConnect();
         dbMsg = mySqlConnect.getCurrentMysqlConnection();

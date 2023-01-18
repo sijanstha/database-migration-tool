@@ -12,17 +12,16 @@ import java.util.ArrayList;
 
 public class SelectTablePanel extends JPanel implements ActionListener {
 
+    static ArrayList<String> allTables;
+    private final DefaultTableModel model;
     private JButton btnCancel;
     private JButton btnNext;
     private JPanel rootPanel;
-
-    static ArrayList<String> allTables;
     private ArrayList<String> selectedTables;
     private JButton btnSelect;
     private JButton btnSelectAll;
     private JButton btnReset;
     private JTable table;
-    private final DefaultTableModel model;
 
     public SelectTablePanel(JPanel rootPanel) {
 

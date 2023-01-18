@@ -6,11 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TableExtractPanel extends JPanel{
-    
+public class TableExtractPanel extends JPanel {
+
     private JPanel rootPanel;
     private JTextArea txtlog;
     private ArrayList<String> selectedTables;
+
     public TableExtractPanel(JPanel rootPanel, ArrayList<String> selectedTables) {
         this.rootPanel = rootPanel;
         this.selectedTables = selectedTables;
@@ -22,10 +23,10 @@ public class TableExtractPanel extends JPanel{
         txtlog.setEditable(false);
         txtlog.setBounds(21, 11, 486, 234);
         add(txtlog);
-        
+
         process();
     }
-    
+
     public void process() {
 
         txtlog.setFont(new Font("Cambria Math", Font.PLAIN, 16));

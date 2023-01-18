@@ -1,4 +1,3 @@
-
 /*
  This Class Fetchs the table details and dumps the table contents into .sql file
  Created by: Sijan Shrestha
@@ -9,8 +8,8 @@ package com.database.migration.tool.extractor.service.dbtabledata;
 
 import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
 import com.database.migration.tool.extractor.service.dbconnection.MysqlConnect;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
 import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
+import com.database.migration.tool.extractor.service.scripts.DBMessage;
 
 import javax.swing.*;
 import java.io.*;
@@ -27,7 +26,7 @@ public class TableDataExtractor extends Thread {
     private ArrayList<String> ar = new ArrayList<String>();
 
     private JPanel rootPanel;
-    
+
     public TableDataExtractor(ArrayList<String> tableList, JPanel rootPanel) {
         msAccessConnect = new MSAccessConnect();
         ar = tableList;
@@ -52,7 +51,7 @@ public class TableDataExtractor extends Thread {
             BufferedWriter fw = new BufferedWriter(outsw);
             DatabaseMetaData meta = con.getMetaData();
             ResultSet res = meta.getTables(null, null, null, table);
-            
+
             fw.write("/* Project By Team: \n Sijan Shrestha \n Divash Adhikari \n Sudeep Bhandari \n BEIT(VI)\n\n Dumping Tables From Database\n*/\n\n");
             fw.append("DROP DATABASE IF EXISTS " + dbName + ";\n");
             fw.append("CREATE DATABASE " + dbName + ";\n");

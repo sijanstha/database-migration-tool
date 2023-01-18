@@ -1,8 +1,5 @@
 package com.database.migration.tool.extractor.service.gui;
 
-import com.database.migration.tool.extractor.service.ImageResolver;
-import io.activej.inject.annotation.Inject;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -13,14 +10,11 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
     private JButton btnCancel;
     private JButton btnNext;
-    private final JPanel rootPanel;
-    private final ImageResolver resolver;
+    private JPanel rootPanel;
 
-    @Inject
-    public WelcomePanel(JPanel rootPanel, ImageResolver resolver) {
+    public WelcomePanel(JPanel rootPanel) {
         setBorder(new LineBorder(new Color(0, 0, 0)));
         this.rootPanel = rootPanel;
-        this.resolver = resolver;
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
         setLayout(null);
@@ -35,9 +29,9 @@ public class WelcomePanel extends JPanel implements ActionListener {
 
         btnNext.addActionListener(this);
         btnCancel.addActionListener(this);
-        
+
         JLabel imgLabel = new JLabel("");
-        imgLabel.setIcon(new ImageIcon(resolver.resolveLogo("frontImg.png")));
+        imgLabel.setIcon(new ImageIcon("res/frontImg.png"));
         imgLabel.setBounds(10, 45, 212, 212);
         add(imgLabel);
 

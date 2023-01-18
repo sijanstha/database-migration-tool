@@ -1,8 +1,7 @@
-
 package com.database.migration.tool.extractor.service.scripts;
 
 public class DataWriteUtils {
-    
+
     public static String getEscaped(String sValue) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sValue.length(); i++) {
@@ -10,7 +9,7 @@ public class DataWriteUtils {
                 case '\\':
                     sb.append("\\\\");
                     break;
-                 case '\'':
+                case '\'':
                     sb.append("\\'");
                     break;
                 case '\n':
@@ -19,7 +18,7 @@ public class DataWriteUtils {
                 case '\r':
                     sb.append("\\r");
                     break;
-                default: 
+                default:
                     sb.append(sValue.charAt(i));
                     break;
             }

@@ -21,19 +21,19 @@ public class TableColumnMetadata {
     private ArrayList<String> tableArray = new ArrayList<String>();
     private DBMessage dbMsg;
     private MSAccessConnect msAccessConnect;
-   
-    public TableColumnMetadata(){
+
+    public TableColumnMetadata() {
         msAccessConnect = new MSAccessConnect();
     }
-    
-    public TableColumnMetadata(Connection msCon){
+
+    public TableColumnMetadata(Connection msCon) {
         con = msCon;
     }
-    
+
     public AppMessage getTableMetadata() {
         AppMessage appMsg = new AppMessage();
         dbMsg = msAccessConnect.getCurrentMsaccessConnection();
-        if(dbMsg.getCODE() != 0){
+        if (dbMsg.getCODE() != 0) {
             appMsg.setCODE(dbMsg.getCODE());
             appMsg.setMSG(dbMsg.getMSG());
             return appMsg;
@@ -71,11 +71,11 @@ public class TableColumnMetadata {
             //System.out.println("Tables Metadata Written Successfully");
 
         } catch (IOException e) {
-           appMsg.setCODE(102);
-           appMsg.setMSG(e.getMessage());
+            appMsg.setCODE(102);
+            appMsg.setMSG(e.getMessage());
         } catch (SQLException ex) {
-           appMsg.setCODE(101);
-           appMsg.setMSG(ex.getMessage());
+            appMsg.setCODE(101);
+            appMsg.setMSG(ex.getMessage());
         }
         return appMsg;
     }

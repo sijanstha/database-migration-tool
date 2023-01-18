@@ -79,12 +79,9 @@ public class IntermediatePanel extends JPanel implements ActionListener {
     }
 
     public String saveProperties() {
-        String msg = "";
         String userHome = System.getProperty("user.home");
-        Properties prop = new Properties();
-        OutputStream output = null;
-        try {
-            output = new FileOutputStream(userHome+"/config.properties");
+        try(OutputStream output = new FileOutputStream(userHome + "/config.properties")) {
+            Properties prop = new Properties();
             prop.setProperty("mysqlIp", CMNDBConfig.getMYSQL_IP());
             prop.setProperty("mysqlPort", CMNDBConfig.getMYSQL_PORT());
             prop.setProperty("mysqlDbName", CMNDBConfig.getMYSQL_DB_NAME());
@@ -93,20 +90,9 @@ public class IntermediatePanel extends JPanel implements ActionListener {
             prop.setProperty("msaccessPath", CMNDBConfig.getMSACCESS_PATH());
             prop.setProperty("msaccessPwd", CMNDBConfig.getMSACCESS_PWD());
             prop.store(output, null);
-            msg = "Application Properties Saved\n\n";
+            return "Application Properties Saved\n\n";
         } catch (IOException io) {
-            msg = io.getMessage();
-            System.out.println(io.toString());
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    msg = e.getMessage();
-                    System.out.println(e.toString());
-                }
-            }
+            return io.getMessage();
         }
-        return msg;
     }
 }

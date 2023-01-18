@@ -1,4 +1,3 @@
-
 package com.database.migration.tool.extractor.service.scripts;
 
 import lombok.Getter;
