@@ -1,12 +1,12 @@
 package com.database.migration.tool.core.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString
+@NoArgsConstructor
 public class HandshakeResponse {
     private String message;
     private boolean isConnectionEstablished;
