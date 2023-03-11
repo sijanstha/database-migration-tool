@@ -2,6 +2,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
+//    implementation project(':core')
     implementation group: 'net.sf.ucanaccess', name: 'ucanaccess', version: '5.0.1'
     implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'

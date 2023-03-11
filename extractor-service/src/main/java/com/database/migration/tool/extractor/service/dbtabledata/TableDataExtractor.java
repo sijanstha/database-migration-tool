@@ -23,7 +23,7 @@ public class TableDataExtractor extends Thread {
     private MSAccessConnect msAccessConnect;
     private MysqlConnect mySqlConnect;
     private String table[] = {"TABLE"};
-    private ArrayList<String> ar = new ArrayList<String>();
+    private ArrayList<String> ar;
 
     private JPanel rootPanel;
 

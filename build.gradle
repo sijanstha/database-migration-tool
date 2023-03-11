@@ -1,21 +1,17 @@
 buildscript {
     ext {
-        springBootVersion = '3.0.1'
         mysqlVersion = '8.0.28'
     }
 }
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version "$springBootVersion"
 }
-
-group 'com.database.migration.tool'
 
 subprojects {
     version '1.0'
     apply plugin: 'java'
-    apply plugin: 'io.spring.dependency-management'
+    group 'com.database.migration.tool'
 
     repositories {
         mavenCentral()

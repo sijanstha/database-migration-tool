@@ -29,7 +29,7 @@ public class ErrorTableListPanel extends JPanel {
     private JScrollPane js;
     private Utils util;
     private List<String> errorTableList;
-    private ArrayList<String> itemList;
+    private List<String> itemList;
     private List<String> colData;
     private int index = 0;
     private JButton btnCancel;
@@ -61,12 +61,7 @@ public class ErrorTableListPanel extends JPanel {
         btnCancel.setBounds(418, 284, 89, 23);
         add(btnCancel);
 
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        btnCancel.addActionListener(e -> System.exit(0));
 
 
         for (int i = 0; i < errorTableList.size(); i++) {
@@ -96,7 +91,7 @@ public class ErrorTableListPanel extends JPanel {
             //System.out.println(errorTableList.get(index));
 
             // Double-click detected
-            itemList = new TableColumnMetaExtractor().getColumnMetaDataArrayList(errorTableList.get(index));
+            itemList = new TableColumnMetaExtractor().resolveColumns(errorTableList.get(index));
             util = new Utils(errorTableList.get(index));
             JDialog dialog = new JDialog(jFrame);
             dialog.setTitle("Table containing errors");
@@ -119,12 +114,7 @@ public class ErrorTableListPanel extends JPanel {
             JButton btnCancel = new JButton("Cancel");
             btnCancel.setSize(100, 100);
             btnCancel.setBounds(310, 600, 100, 100);
-            btnCancel.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dialog.dispose();
-                }
-            });
+            btnCancel.addActionListener(e -> dialog.dispose());
             DefaultTableModel model = new DefaultTableModel();
 
             for (int i = 0; i < itemList.size(); i++) {
@@ -152,73 +142,70 @@ public class ErrorTableListPanel extends JPanel {
             }
 
             // new window for error correction
-            button.addActionListener(new ActionListener() {
-                @Override
+            // end of action performed
+            button.addActionListener(e -> {
+                ArrayList<String> arrayColValue = new ArrayList<>();
+                AppMessage querySts = null;
+                for (int i = 0; i < colData.size(); i++) {
+                    String tempColVal = "";
+                    // Splitting column values
+                    for (int j = 0; j < len; j++) {
 
-                public void actionPerformed(ActionEvent e) {
-                    ArrayList<String> arrayColValue = new ArrayList<>();
-                    AppMessage querySts = null;
-                    for (int i = 0; i < colData.size(); i++) {
-                        String tempColVal = "";
-                        // Splitting column values
-                        for (int j = 0; j < len; j++) {
-
-                            // checking for timestamp
-                            if (util.isTimeStamp(table.getColumnName(j))) {
-                                if (!util.isDateFormatCorrect(table.getValueAt(i, j).toString())) {
-                                    JOptionPane.showMessageDialog(null,
-                                            "Sorry cannot accept " + table.getValueAt(i, j).toString());
-                                    return;
-                                }
+                        // checking for timestamp
+                        if (util.isTimeStamp(table.getColumnName(j))) {
+                            if (!util.isDateFormatCorrect(table.getValueAt(i, j).toString())) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Sorry cannot accept " + table.getValueAt(i, j).toString());
+                                return;
+                            }
+                            tempColVal += "'" + table.getValueAt(i, j) + "'";
+                        } else {
+                            // checking for invalid data inserted
+                            if (!util.isValid(table.getValueAt(i, j).toString())) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Sorry cannot accept " + table.getValueAt(i, j).toString());
+                                return;
+                            }
+                            // checking for varchar,char
+                            int flg = util.checkVarchar(table.getColumnName(j));
+                            if (flg == 1) {
                                 tempColVal += "'" + table.getValueAt(i, j) + "'";
                             } else {
-                                // checking for invalid data inserted
-                                if (!util.isValid(table.getValueAt(i, j).toString())) {
-                                    JOptionPane.showMessageDialog(null,
-                                            "Sorry cannot accept " + table.getValueAt(i, j).toString());
-                                    return;
-                                }
-                                // checking for varchar,char
-                                int flg = util.checkVarchar(table.getColumnName(j));
-                                if (flg == 1) {
-                                    tempColVal += "'" + table.getValueAt(i, j) + "'";
-                                } else {
-                                    tempColVal += table.getValueAt(i, j);
-                                }
+                                tempColVal += table.getValueAt(i, j);
                             }
-                            // building column values
-                            if (j < len - 1) {
-                                tempColVal += ",";
-                            } else {
-                                tempColVal += "";
-                            }
-                        } // end of inner for loop
-                        arrayColValue.add(tempColVal);
-                    } // end of outer for loop
-                    for (int count = 0; count < arrayColValue.size(); count++) {
-                        querySts = util.dynSqlQuery(arrayColValue.get(count));
-                    }
-                    if (querySts.getCODE() == 0) {
-                        System.out.println(index);
-                        JOptionPane.showMessageDialog(null, querySts.getMSG());
-
-                        // deletes files from list and arrraylist
-                        System.out.println(errorTableList.get(index));
-                        util.removeFromErrorFile(errorTableList.get(index));
-                        m1.remove(index);
-                        errorTableList.remove(index);
-                        // if editing error done then close the current frame and display thank you
-                        // frame
-                        if (errorTableList.isEmpty()) {
-                            rootPanel.remove(1);
-                            rootPanel.add(new ThankYouPanel(rootPanel), 1);
-                            rootPanel.repaint();
                         }
-                        dialog.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(null, querySts.getMSG());
+                        // building column values
+                        if (j < len - 1) {
+                            tempColVal += ",";
+                        } else {
+                            tempColVal += "";
+                        }
+                    } // end of inner for loop
+                    arrayColValue.add(tempColVal);
+                } // end of outer for loop
+                for (int count = 0; count < arrayColValue.size(); count++) {
+                    querySts = util.dynSqlQuery(arrayColValue.get(count));
+                }
+                if (querySts.getCODE() == 0) {
+                    System.out.println(index);
+                    JOptionPane.showMessageDialog(null, querySts.getMSG());
+
+                    // deletes files from list and arrraylist
+                    System.out.println(errorTableList.get(index));
+                    util.removeFromErrorFile(errorTableList.get(index));
+                    m1.remove(index);
+                    errorTableList.remove(index);
+                    // if editing error done then close the current frame and display thank you
+                    // frame
+                    if (errorTableList.isEmpty()) {
+                        rootPanel.remove(1);
+                        rootPanel.add(new ThankYouPanel(rootPanel), 1);
+                        rootPanel.repaint();
                     }
-                } // end of action performed
+                    dialog.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, querySts.getMSG());
+                }
             });
 
             table.setModel(model);

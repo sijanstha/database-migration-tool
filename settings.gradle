@@ -1,4 +1,6 @@
 rootProject.name = 'database-migration-tool'
 include 'extractor-service'
 include 'migrator-service'
+include 'core'
+include 'migrator-sdk'
 
