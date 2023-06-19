@@ -3,4 +3,5 @@ include 'extractor-service'
 include 'migrator-service'
 include 'core'
 include 'migrator-sdk'
+include 'ingestor'
 

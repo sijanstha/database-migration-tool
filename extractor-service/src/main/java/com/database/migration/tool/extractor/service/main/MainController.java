@@ -58,6 +58,7 @@ public class MainController {
             CMNDBConfig.setMYSQL_PORT(prop.getProperty("mysqlPort"));
             CMNDBConfig.setMSACCESS_PATH(prop.getProperty("msaccessPath"));
             CMNDBConfig.setMSACCESS_PWD(prop.getProperty("msaccessPwd"));
+            CMNDBConfig.setMSACCESS_PWD(prop.getProperty("connectionId"));
         } catch (IOException ex) {
             System.out.println(ex);
         }

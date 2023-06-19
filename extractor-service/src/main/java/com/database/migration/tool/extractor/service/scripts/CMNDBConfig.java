@@ -8,6 +8,7 @@ public class CMNDBConfig {
     private static String MYSQL_DB_NAME;
     private static String MSACCESS_PATH;
     private static String MSACCESS_PWD;
+    private static String CONNECTION_ID;
 
     public static String getMYSQL_IP() {
         return MYSQL_IP;
@@ -64,4 +65,13 @@ public class CMNDBConfig {
     public static void setMSACCESS_PWD(String MSACCESS_PWD) {
         CMNDBConfig.MSACCESS_PWD = MSACCESS_PWD;
     }
+
+    public static void setCONNECTION_ID(String connectionId) {
+        CMNDBConfig.CONNECTION_ID = connectionId;
+    }
+
+    public static String getCONNECTION_ID(){
+        return CONNECTION_ID;
+    }
+
 }
