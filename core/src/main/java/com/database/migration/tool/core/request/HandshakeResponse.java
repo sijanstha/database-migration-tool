@@ -10,4 +10,5 @@ import lombok.*;
 public class HandshakeResponse {
     private String message;
     private boolean isConnectionEstablished;
+    private String connectionId;
 }

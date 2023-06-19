@@ -1,5 +1,7 @@
 package com.database.migration.tool.core.utils;
 
+import java.util.UUID;
+
 public class StringUtils {
 
     public static boolean hasText(String str) {
@@ -14,5 +16,9 @@ public class StringUtils {
             }
         }
         return false;
+    }
+
+    public static String generateUniqueConnectionId() {
+        return UUID.randomUUID().toString();
     }
 }

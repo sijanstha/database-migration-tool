@@ -3,6 +3,7 @@ package com.database.migration.tool.migrator.sdk;
 import com.database.migration.tool.core.request.HandshakeRequest;
 import com.database.migration.tool.core.request.HandshakeResponse;
 import com.database.migration.tool.core.response.ApiSuccessResponse;
+import com.database.migration.tool.core.response.TenantInfoResponse;
 import feign.Feign;
 import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
@@ -36,6 +37,11 @@ public class MigratorServiceApi {
 
     public HandshakeResponse initiateInitialHandshake(HandshakeRequest request) {
         ApiSuccessResponse<HandshakeResponse> response = this.endpoints.initialHandshake(request);
+        return response.getBody();
+    }
+
+    public TenantInfoResponse getTenantInfo(String connectionId) {
+        ApiSuccessResponse<TenantInfoResponse> response = this.endpoints.getTenantInfo(connectionId);
         return response.getBody();
     }
 }

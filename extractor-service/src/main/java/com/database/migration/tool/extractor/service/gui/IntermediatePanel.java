@@ -89,6 +89,7 @@ public class IntermediatePanel extends JPanel implements ActionListener {
             prop.setProperty("mysqlDbPwd", CMNDBConfig.getMYSQL_USER_PWD());
             prop.setProperty("msaccessPath", CMNDBConfig.getMSACCESS_PATH());
             prop.setProperty("msaccessPwd", CMNDBConfig.getMSACCESS_PWD());
+            prop.setProperty("connectionId", CMNDBConfig.getCONNECTION_ID());
             prop.store(output, null);
             return "Application Properties Saved\n\n";
         } catch (IOException io) {

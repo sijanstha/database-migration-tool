@@ -1,9 +1,14 @@
 package com.database.migration.tool.extractor.service.gui;
 
+import com.database.migration.tool.core.request.HandshakeRequest;
+import com.database.migration.tool.core.request.HandshakeResponse;
+import com.database.migration.tool.extractor.service.config.MigratorServiceConfig;
 import com.database.migration.tool.extractor.service.dbconnection.MysqlConnect;
 import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
 import com.database.migration.tool.extractor.service.scripts.DBMessage;
 import com.database.migration.tool.extractor.service.scripts.Utils;
+import com.database.migration.tool.migrator.sdk.MigratorServiceApi;
+import io.activej.inject.Injector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +33,7 @@ public class MySQLPanel extends JPanel implements ActionListener {
     private JTextField txtUname;
     private JPasswordField txtPwd;
     private Utils util;
+    private MigratorServiceApi migratorServiceApi;
 
     public MySQLPanel(JPanel rootPanel) {
         util = new Utils();
@@ -101,6 +107,9 @@ public class MySQLPanel extends JPanel implements ActionListener {
         lblMysqlImg.setBounds(350, 90, 200, 200);
         lblMysqlImg.setIcon(new ImageIcon("res/mysql.png"));
         add(lblMysqlImg);
+
+        Injector injector = Injector.of(new MigratorServiceConfig());
+        this.migratorServiceApi = injector.getInstance(MigratorServiceApi.class);
     }
 
     @Override
@@ -139,15 +148,28 @@ public class MySQLPanel extends JPanel implements ActionListener {
             CMNDBConfig.setMYSQL_USER_NAME(dbUname);
             CMNDBConfig.setMYSQL_USER_PWD(dbPwd);
 
-            DBMessage dbMsg = new MysqlConnect().getCurrentMysqlConnection();
-            if (dbMsg.getCODE() != 0) {
-                JOptionPane.showMessageDialog(this, dbMsg.getMSG());
+            HandshakeResponse handshakeResponse = this.migratorServiceApi.initiateInitialHandshake(buildHandshakeRequest());
+
+            if (!handshakeResponse.isConnectionEstablished()) {
+                JOptionPane.showMessageDialog(this, handshakeResponse.getMessage());
                 return;
             }
-            JOptionPane.showMessageDialog(this, dbMsg.getMSG());
+            CMNDBConfig.setCONNECTION_ID(handshakeResponse.getConnectionId());
+
+            JOptionPane.showMessageDialog(this, handshakeResponse.getMessage());
             rootPanel.remove(1);
             rootPanel.add(new IntermediatePanel(rootPanel), 1);
             rootPanel.repaint();
         }
+    }
+
+    private HandshakeRequest buildHandshakeRequest() {
+        HandshakeRequest request = new HandshakeRequest();
+        request.setMysqlhost(CMNDBConfig.getMYSQL_IP());
+        request.setMysqluser(CMNDBConfig.getMYSQL_USER_NAME());
+        request.setMysqlpassword(CMNDBConfig.getMYSQL_USER_PWD());
+        request.setPort(Integer.parseInt(CMNDBConfig.getMYSQL_PORT()));
+        request.setDbname(CMNDBConfig.getMYSQL_DB_NAME());
+        return request;
     }
 }
