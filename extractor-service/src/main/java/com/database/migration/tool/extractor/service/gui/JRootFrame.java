@@ -1,14 +1,19 @@
 package com.database.migration.tool.extractor.service.gui;
 
+import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.service.scripts.DBMessage;
+
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 public class JRootFrame extends JFrame {
 
     private JPanel contentPane;
     private WelcomePanel welcomePanel;
     private ErrorTableListPanel errorPanel;
+    private DBMessage dbMessage;
 
     public JRootFrame(int flag) {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -19,6 +24,7 @@ public class JRootFrame extends JFrame {
         JHeaderPanel headerPanel = new JHeaderPanel();
         headerPanel.setBounds(0, 0, 550, 72);
         contentPane.add(headerPanel);
+        this.dbMessage = MSAccessConnect.getCurrentMsAccessConnection();
 
         if (flag == 0) {
             welcomePanel = new WelcomePanel(contentPane);
@@ -35,6 +41,14 @@ public class JRootFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 //TODO CHECK ALL FILES AND DELETE
                 System.out.println("Closed");
+                if (dbMessage.getCODE() == 0) {
+                    try {
+                        dbMessage.getDbCon().close();
+                        System.out.println("ms access db connection closed");
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
                 e.getWindow().dispose();
             }
         });

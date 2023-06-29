@@ -1,20 +1,26 @@
 package com.database.migration.tool.extractor.service.gui;
 
+import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.service.scripts.DBMessage;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class WelcomePanel extends JPanel implements ActionListener {
 
     private JButton btnCancel;
     private JButton btnNext;
     private JPanel rootPanel;
+    private DBMessage dbMessage;
 
     public WelcomePanel(JPanel rootPanel) {
         setBorder(new LineBorder(new Color(0, 0, 0)));
         this.rootPanel = rootPanel;
+        this.dbMessage = MSAccessConnect.getCurrentMsAccessConnection();
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
         setLayout(null);
@@ -53,6 +59,14 @@ public class WelcomePanel extends JPanel implements ActionListener {
             rootPanel.add(new MsAccessPanel(rootPanel), 1);
             rootPanel.repaint();
         } else if (arg0.getSource() == btnCancel) {
+            if (dbMessage.getCODE() == 0) {
+                try {
+                    dbMessage.getDbCon().close();
+                    System.out.println("ms access db connection closed");
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
             System.exit(0);
         }
     }

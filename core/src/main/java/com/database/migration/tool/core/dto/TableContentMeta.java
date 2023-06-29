@@ -13,5 +13,5 @@ import java.util.Set;
 @ToString
 public class TableContentMeta extends BaseMeta {
     private Set<String> columns;
-    private List<Map<String, ColumnValueMeta>> data;
+    private Map<String, ColumnValueMeta> data;
 }
