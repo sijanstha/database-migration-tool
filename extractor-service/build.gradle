@@ -2,5 +2,6 @@ dependencies {
     implementation 'net.sf.ucanaccess:ucanaccess:5.0.1'
     implementation 'commons-logging:commons-logging:1.2'
     implementation 'io.activej:activej-inject:5.4.3'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation project(path: ':migrator-sdk')
 }

@@ -27,3 +27,4 @@ bin/
 dump.sql
 error_log.txt
 table_meta_data.txt
+v.json

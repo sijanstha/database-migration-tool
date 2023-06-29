@@ -17,14 +17,12 @@ public class Utils {
     private TableColumnMetaExtractor tblMetaExtract;
     private Connection con;
     private DBMessage dbMsg;
-    private MSAccessConnect msAccessConnect;
     private MysqlConnect mysqlConnect;
 
     public Utils() {
     }
 
     public Utils(String tblName) {
-        msAccessConnect = new MSAccessConnect();
         mysqlConnect = new MysqlConnect();
         this.tblName = tblName;
         tblMetaExtract = new TableColumnMetaExtractor();
@@ -33,7 +31,7 @@ public class Utils {
 
     public int checkVarchar(String tempColName) {
         int flag = 0;
-        dbMsg = msAccessConnect.getCurrentMsaccessConnection();
+        dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
         if (dbMsg.getCODE() != 0) {
             return flag;
         }
@@ -63,7 +61,7 @@ public class Utils {
 
     public boolean isTimeStamp(String tempColName) {
         boolean flag = false;
-        dbMsg = msAccessConnect.getCurrentMsaccessConnection();
+        dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
         if (dbMsg.getCODE() != 0) {
             return false;
         }

@@ -3,7 +3,6 @@ package com.database.migration.tool.migrator.service.service;
 import com.database.migration.tool.migrator.service.entity.Tenant;
 import com.database.migration.tool.migrator.service.repository.TenantRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,12 +13,12 @@ import java.util.Optional;
 @Slf4j
 public class TenantCache {
     private final Map<String, Tenant> tenantCache;
-    @Autowired
-    private TenantRepository tenantRepository;
+    private final TenantRepository tenantRepository;
 
-    public TenantCache() {
+    public TenantCache(TenantRepository tenantRepository) {
         tenantCache = new HashMap<>();
-        tenantRepository.findAll().stream().forEach(tenant -> addTenantToCache(tenant));
+        this.tenantRepository = tenantRepository;
+        this.tenantRepository.findAll().stream().forEach(tenant -> addTenantToCache(tenant));
         log.info("Tenant info loaded");
     }
 

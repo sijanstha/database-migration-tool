@@ -16,23 +16,14 @@ import java.util.ArrayList;
 
 public class TableColumnMetadata {
 
-    private Connection con = null;
+    private Connection con;
     private String table[] = {"TABLE"};
     private ArrayList<String> tableArray = new ArrayList<String>();
     private DBMessage dbMsg;
-    private MSAccessConnect msAccessConnect;
-
-    public TableColumnMetadata() {
-        msAccessConnect = new MSAccessConnect();
-    }
-
-    public TableColumnMetadata(Connection msCon) {
-        con = msCon;
-    }
 
     public AppMessage getTableMetadata() {
         AppMessage appMsg = new AppMessage();
-        dbMsg = msAccessConnect.getCurrentMsaccessConnection();
+        dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
         if (dbMsg.getCODE() != 0) {
             appMsg.setCODE(dbMsg.getCODE());
             appMsg.setMSG(dbMsg.getMSG());
