@@ -14,5 +14,5 @@ public interface MigratorServiceEndpoints {
     ApiSuccessResponse<HandshakeResponse> initialHandshake(HandshakeRequest request);
 
     @RequestLine("GET /api/tenant/info/{connectionId}")
-    ApiSuccessResponse<TenantInfoResponse> getTenantInfo(@Param String connectionId);
+    ApiSuccessResponse<TenantInfoResponse> getTenantInfo(@Param("connectionId") String connectionId);
 }

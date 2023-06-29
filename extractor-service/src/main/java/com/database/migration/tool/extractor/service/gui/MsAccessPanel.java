@@ -121,7 +121,7 @@ public class MsAccessPanel extends JPanel implements ActionListener {
             }
             CMNDBConfig.setMSACCESS_PATH(path);
             CMNDBConfig.setMSACCESS_PWD(text);
-            AppMessage appMsg = new MSAccessConnect().getCurrentMsaccessConnection();
+            AppMessage appMsg = MSAccessConnect.getCurrentMsAccessConnection();
             if (appMsg.getCODE() != 0) {
                 JOptionPane.showMessageDialog(this, appMsg.getMSG());
                 return;

@@ -6,162 +6,137 @@
  */
 package com.database.migration.tool.extractor.service.dbtabledata;
 
+import com.database.migration.tool.core.dto.*;
 import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.service.dbconnection.MysqlConnect;
 import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
+import com.database.migration.tool.extractor.service.service.DataTypeMapperService;
+import com.google.gson.Gson;
 
 import javax.swing.*;
-import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class TableDataExtractor extends Thread {
-
-    private Connection con = null;
-    private DBMessage dbMsg;
-    private MSAccessConnect msAccessConnect;
-    private MysqlConnect mySqlConnect;
-    private String table[] = {"TABLE"};
-    private ArrayList<String> ar;
-
+    private ArrayList<String> tableNameList;
+    private Connection msAccessDbConnection;
     private JPanel rootPanel;
+    private DataTypeMapperService dataTypeMapperService;
+    private Gson gson;
 
     public TableDataExtractor(ArrayList<String> tableList, JPanel rootPanel) {
-        msAccessConnect = new MSAccessConnect();
-        ar = tableList;
+        this.tableNameList = tableList;
         this.rootPanel = rootPanel;
+        this.dataTypeMapperService = new DataTypeMapperService();
+        this.msAccessDbConnection = MSAccessConnect.getMsAccessDbConnection();
+        this.gson = new Gson();
     }
 
-    public boolean databaseMigrator() {
-        dbMsg = msAccessConnect.getCurrentMsaccessConnection();
-        if (dbMsg.getCODE() != 0) {
-            return false;
-        }
-        con = dbMsg.getDbCon();
-        try {
-            String dbName = CMNDBConfig.getMYSQL_DB_NAME();
-            //opening file for dumping database records
-            File file = new File("dump.sql");
-            if (file.exists()) {
-                file.delete();
+    private void extractAndProcessDbTable() {
+        for (int i = 0; i < tableNameList.size(); i++) {
+            try {
+                resolveTableStructureMetaData(tableNameList.get(i));
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                this.tableNameList.remove(i); // because we don't want to process the table that has not been created in db because of exception
             }
-            FileOutputStream fileout = new FileOutputStream(file);
-            OutputStreamWriter outsw = new OutputStreamWriter(fileout, "UTF-8");
-            BufferedWriter fw = new BufferedWriter(outsw);
-            DatabaseMetaData meta = con.getMetaData();
-            ResultSet res = meta.getTables(null, null, null, table);
+        }
+    }
 
-            fw.write("/* Project By Team: \n Sijan Shrestha \n Divash Adhikari \n Sudeep Bhandari \n BEIT(VI)\n\n Dumping Tables From Database\n*/\n\n");
-            fw.append("DROP DATABASE IF EXISTS " + dbName + ";\n");
-            fw.append("CREATE DATABASE " + dbName + ";\n");
-            fw.append("USE " + dbName + ";\n\n");
-
-            for (int i = 0; i < ar.size(); i++) {
-                String tableColumnsMeta = "";
-                fw.append("DROP TABLE IF EXISTS " + ar.get(i) + ";\n");
-                fw.append("CREATE TABLE " + ar.get(i) + "( ");
-                res = meta.getColumns(null, null, ar.get(i), null);
-
-                //fetching columns type,name,size
-                while (res.next()) {
-                    tableColumnsMeta += res.getString("COLUMN_NAME") + " ";
-                    //System.out.println(res.getString("COLUMN_NAME") + ", " + res.getString("TYPE_NAME"));
-                    if (res.getString("TYPE_NAME").equalsIgnoreCase("TIMESTAMP")) {
-                        tableColumnsMeta += "DATETIME";
-                    } else {
-                        tableColumnsMeta += res.getString("TYPE_NAME");
-                    }
-                    if (res.getString("TYPE_NAME").equalsIgnoreCase("TIMESTAMP")) {
-                        tableColumnsMeta += "(5),";
-                    } else if (res.getString("TYPE_NAME").equalsIgnoreCase("DOUBLE")) {
-                        tableColumnsMeta += "(12,2),";
-                    } else if (res.getString("TYPE_NAME").equalsIgnoreCase("BOOLEAN")) {
-                        tableColumnsMeta += ",";
-                    } else {
-                        tableColumnsMeta += "(" + res.getInt("COLUMN_SIZE") + ")";
-                        if (res.getString("IS_AUTOINCREMENT").equals("YES")) {
-                            tableColumnsMeta += " AUTO_INCREMENT, ";
-                        } else {
-                            tableColumnsMeta += ",";
-                        }
-                    }
-                }
-
-                //fetching primary keys from table
-                ResultSet primaryKeys = meta.getPrimaryKeys(null, null, ar.get(i));
-                if (primaryKeys.next()) {
-                    fw.append(tableColumnsMeta);
-                    fw.append(" PRIMARY KEY(" + primaryKeys.getString("COLUMN_NAME") + ")");
-                } else {
-                    fw.append(tableColumnsMeta.substring(0, tableColumnsMeta.length() - 1));
-                }
-                fw.append(");");
-                fw.append("\n\n");
-
-                con.setAutoCommit(false);
-                //for insert statement
-                String selectSql = "Select * FROM " + ar.get(i);
-                Statement rst = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-                        ResultSet.CONCUR_READ_ONLY);
+    private void extractAndProcessTableRecords() {
+        try {
+            for (int tableIdx = 0; tableIdx < tableNameList.size(); tableIdx++) {
+                msAccessDbConnection.setAutoCommit(false);
+                String selectSql = "Select * FROM " + tableNameList.get(tableIdx);
+                Statement rst = msAccessDbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 rst.setFetchSize(500);
                 ResultSet rs = rst.executeQuery(selectSql);
                 ResultSetMetaData rsmd = rs.getMetaData();
-                int columnsNumber = rsmd.getColumnCount();
+                int totalColumnsCount = rsmd.getColumnCount();
 
-                // String columnData = "";
-                String columnFields = new TableColumnMetaExtractor().getColumnMetaData(ar.get(i));
-
+                TableContentMeta tableContentMeta = new TableContentMeta();
+                Set<String> columns = new HashSet<>();
+                List<Map<String, ColumnValueMeta>> columnValues = new ArrayList<>();
                 while (rs.next()) {
-                    fw.append("INSERT\tINTO\t" + ar.get(i) + "\t( " + columnFields + " ) " + " VALUES ");
-                    fw.append("(\t");
-                    for (int j = 1; j <= columnsNumber; j++) {
-                        if (rs.getString(j) == null || rs.getString(j) == "") {
-                            if (j < columnsNumber) {
-                                fw.append(" " + null + ", ");
-                            } else if (j == columnsNumber) {
-                                fw.append(" " + null);
-                            }
-
-                        } else if (rs.getString(j).contains("'")) {
-                            int index = rs.getString(j).indexOf("'");
-                            if (j < columnsNumber) {
-                                fw.append(" '" + rs.getString(j).substring(0, index) + "\\" + rs.getString(j).substring(index) + "', ");
-                            } else if (j == columnsNumber) {
-                                fw.append(" '" + rs.getString(j).substring(0, index) + "\\" + rs.getString(j).substring(index) + "' ");
-                            }
-
-                        } else if (rsmd.getColumnTypeName(j).equalsIgnoreCase("varchar") || rsmd.getColumnTypeName(j).equalsIgnoreCase("text") || rsmd.getColumnTypeName(j).equalsIgnoreCase("timestamp")) {
-                            if (j < columnsNumber) {
-                                fw.append(" '" + rs.getString(j) + "', ");
-                            } else if (j == columnsNumber) {
-                                fw.append(" '" + rs.getString(j) + "' ");
-                            }
-                        } else if (j < columnsNumber) {
-                            fw.append(rs.getString(j) + ", ");
-                        } else if (j == columnsNumber) {
-                            fw.append(rs.getString(j));
-                        }
+                    Map<String, ColumnValueMeta> columnValueMetaMap = new HashMap<>();
+                    for (int columnIdx = 1; columnIdx <= totalColumnsCount; columnIdx++) {
+                        String columnName = this.resolveColumnName(rs, columnIdx);
+                        ColumnValueMeta columnValueMeta = resolveColumnValueMeta(rs, rsmd.getColumnTypeName(columnIdx), columnIdx);
+                        columns.add(columnName);
+                        columnValueMetaMap.put(columnName, columnValueMeta);
                     }
-                    fw.append("\t);\n");
+                    columnValues.add(columnValueMetaMap);
                 }
-                fw.append("\n");
-                //  fw.append(columnData);
-                fw.append("\n");
-                fw.append("\n\n");
+                tableContentMeta.setConnectionId(CMNDBConfig.getCONNECTION_ID());
+                tableContentMeta.setStatement(SqlStatementEnum.INSERT);
+                tableContentMeta.setType(SqlCommandEnum.DML);
+                tableContentMeta.setTableName(tableNameList.get(tableIdx));
+                tableContentMeta.setColumns(columns);
+                tableContentMeta.setData(columnValues);
+                System.out.println(gson.toJson(tableContentMeta));
                 rst.close();
             }
-
-            fw.flush();
-            fw.close();
-            res.close();
-            con.close();
-            System.out.println("Data Written SuccessFul");
-            return true;
-        } catch (SQLException | IOException e) {
+            msAccessDbConnection.commit();
+            msAccessDbConnection.close();
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
         }
+    }
+
+    public boolean databaseMigrator() {
+        this.extractAndProcessDbTable();
+        this.extractAndProcessTableRecords();
+        return false;
+    }
+
+    private ColumnValueMeta resolveColumnValueMeta(ResultSet resultSet, String columnType, int columnIndex) throws SQLException {
+        ColumnValueMeta columnValueMeta = new ColumnValueMeta();
+        if (resultSet.getString(columnIndex) == null || resultSet.getString(columnIndex) == "") {
+            columnValueMeta.setValue(null);
+        } else if (resultSet.getString(columnIndex).contains("'")) {
+            int index = resultSet.getString(columnIndex).indexOf("'");
+            columnValueMeta.setValue(resultSet.getString(columnIndex).substring(0, index) + "\\" + resultSet.getString(columnIndex).substring(index));
+        } else {
+            columnValueMeta.setValue(resultSet.getString(columnIndex));
+        }
+        columnValueMeta.setDataType(dataTypeMapperService.mapMsAccessToJavaDataType(columnType));
+        return columnValueMeta;
+    }
+
+    private TableStructureMeta resolveTableStructureMetaData(String tableName) throws SQLException {
+        TableStructureMeta tableStructureMeta = new TableStructureMeta();
+        List<ColumnStructureMeta> columnStructureMetas = new ArrayList<>();
+
+        DatabaseMetaData meta = msAccessDbConnection.getMetaData();
+        ResultSet columnsMetaDataResultSet = meta.getColumns(null, null, tableName, null);
+        ResultSet primaryKeys = meta.getPrimaryKeys(null, null, tableName);
+        while (columnsMetaDataResultSet.next()) {
+            ColumnStructureMeta columnMetaData = new ColumnStructureMeta();
+            columnMetaData.setColumnName(columnsMetaDataResultSet.getString("COLUMN_NAME"));
+            if (columnsMetaDataResultSet.getString("TYPE_NAME").equalsIgnoreCase("TIMESTAMP")) {
+                columnMetaData.setDataType("DATETIME");
+            } else {
+                columnMetaData.setDataType(columnsMetaDataResultSet.getString("TYPE_NAME"));
+            }
+            columnMetaData.setSize(columnsMetaDataResultSet.getInt("COLUMN_SIZE"));
+            columnMetaData.setAutoIncrement(columnsMetaDataResultSet.getString("IS_AUTOINCREMENT").equals("YES"));
+            columnStructureMetas.add(columnMetaData);
+        }
+
+        tableStructureMeta.setConnectionId(CMNDBConfig.getCONNECTION_ID());
+        tableStructureMeta.setStatement(SqlStatementEnum.CREATE);
+        tableStructureMeta.setType(SqlCommandEnum.DDL);
+        tableStructureMeta.setPrimaryKeyColumn(primaryKeys.next() ? primaryKeys.getString("COLUMN_NAME") : null);
+        tableStructureMeta.setTableName(tableName);
+        tableStructureMeta.setColumnMetaData(columnStructureMetas);
+        // TODO: send this tableStructureMeta to Kafka topic
+        System.out.println(gson.toJson(tableStructureMeta));
+        columnsMetaDataResultSet.close();
+        return tableStructureMeta;
+    }
+
+    private String resolveColumnName(ResultSet resultSet, int columnIndex) throws SQLException {
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        return resultSetMetaData.getColumnName(columnIndex);
     }
 
     @Override

@@ -10,30 +10,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MSAccessConnect {
+    private static DBMessage dbMessage;
 
-    private String path = CMNDBConfig.getMSACCESS_PATH() + ";password=";
-    private String pwd = CMNDBConfig.getMSACCESS_PWD();
-    private Connection connection = null;
-    private DBMessage dbMsg;
-
-    public MSAccessConnect() {
-        dbMsg = new DBMessage();
+    public static DBMessage getCurrentMsAccessConnection() {
+        if (dbMessage == null || dbMessage.getCODE() != 0) {
+            dbMessage = new DBMessage();
+            try {
+                Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+                Connection connection = DriverManager.getConnection(String.format("jdbc:ucanaccess://%s;password=%s;memory=false", CMNDBConfig.getMSACCESS_PATH(), CMNDBConfig.getMSACCESS_PWD()));
+                dbMessage.setCODE(0);
+                dbMessage.setMSG("MS Access Connection Established!");
+                dbMessage.setDbCon(connection);
+            } catch (SQLException ex) {
+                dbMessage.setCODE(101);
+                dbMessage.setMSG(ex.getMessage());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MSAccessConnect.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return dbMessage;
     }
 
-    public DBMessage getCurrentMsaccessConnection() {
-        try {
-            Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-            connection = DriverManager.getConnection("jdbc:ucanaccess://" + path + pwd + ";memory=false");
-            dbMsg.setCODE(0);
-            dbMsg.setMSG("MS Access Connection Established!");
-            dbMsg.setDbCon(connection);
-        } catch (SQLException ex) {
-            dbMsg.setCODE(101);
-            System.out.println(ex.toString());
-            dbMsg.setMSG(ex.getMessage());
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MSAccessConnect.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return dbMsg;
+    public static Connection getMsAccessDbConnection() {
+        DBMessage dbMessage = getCurrentMsAccessConnection();
+        if (dbMessage.getCODE() != 0)
+            throw new RuntimeException("Cannot connect to ms access db");
+
+        return dbMessage.getDbCon();
     }
 }

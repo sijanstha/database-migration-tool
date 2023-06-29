@@ -1,9 +1,10 @@
 package com.database.migration.tool.core.request;
 
-import com.database.migration.tool.core.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import static com.database.migration.tool.core.validator.HandshakeRequestValidator.*;
+import static com.database.migration.tool.core.validator.HandshakeRequestValidator.HandshakeRequestValidationResult.SUCCESS;
 @Getter
 @Setter
 public class HandshakeRequest {
@@ -14,16 +15,13 @@ public class HandshakeRequest {
     private String mysqlpassword;
 
     public void validate() {
-        if (!StringUtils.hasText(mysqlhost)) {
-            throw new IllegalArgumentException("Mysql host is required");
-        }
+        HandshakeRequestValidationResult validator = isMysqlHostValid()
+                .and(isMysqlUserValid())
+                .and(isDbNameValid())
+                .apply(this);
 
-        if (!StringUtils.hasText(mysqluser)) {
-            throw new IllegalArgumentException("Mysql user name is required");
-        }
-
-        if (!StringUtils.hasText(dbname)) {
-            throw new IllegalArgumentException("Mysql database name is required");
+        if (!validator.equals(SUCCESS)) {
+            throw new IllegalArgumentException(validator.getMessage());
         }
     }
 
