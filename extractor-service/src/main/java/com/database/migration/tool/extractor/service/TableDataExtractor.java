@@ -7,8 +7,7 @@
 package com.database.migration.tool.extractor.service;
 
 import com.database.migration.tool.core.dto.*;
-import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.scripts.CMNDBConfig;
+import com.database.migration.tool.extractor.model.CMNDBConfig;
 import com.google.gson.Gson;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ public class TableDataExtractor {
     public TableDataExtractor(ArrayList<String> tableList, JTextArea textArea) {
         this.tableNameList = tableList;
         this.dataTypeMapperService = new DataTypeMapperService();
-        this.msAccessDbConnection = MSAccessConnect.getMsAccessDbConnection();
+        this.msAccessDbConnection = MSAccessConnectionService.getMsAccessDbConnection();
         this.gson = new Gson();
         this.executor = Executors.newFixedThreadPool(5);
         this.jTextArea = textArea;
@@ -79,10 +78,9 @@ public class TableDataExtractor {
     private void resolveTableRecords(int tableIdx) {
         try {
             msAccessDbConnection.setAutoCommit(false);
-            String selectSql = "Select * FROM " + tableNameList.get(tableIdx);
             Statement rst = msAccessDbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             rst.setFetchSize(500);
-            ResultSet rs = rst.executeQuery(selectSql);
+            ResultSet rs = rst.executeQuery(String.format("SELECT * FROM %s", tableNameList.get(tableIdx)));
             ResultSetMetaData rsmd = rs.getMetaData();
             int totalColumnsCount = rsmd.getColumnCount();
 

@@ -1,7 +1,7 @@
-package com.database.migration.tool.extractor.dbconnection;
+package com.database.migration.tool.extractor.service;
 
-import com.database.migration.tool.extractor.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.scripts.DBMessage;
+import com.database.migration.tool.extractor.model.CMNDBConfig;
+import com.database.migration.tool.extractor.model.DBMessage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MSAccessConnect {
+public class MSAccessConnectionService {
     private static DBMessage dbMessage;
 
     public static DBMessage getCurrentMsAccessConnection() {
@@ -25,7 +25,7 @@ public class MSAccessConnect {
                 dbMessage.setCODE(101);
                 dbMessage.setMSG(ex.getMessage());
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(MSAccessConnect.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MSAccessConnectionService.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return dbMessage;

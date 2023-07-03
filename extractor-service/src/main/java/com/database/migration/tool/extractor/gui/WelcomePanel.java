@@ -1,7 +1,7 @@
 package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.scripts.DBMessage;
+import com.database.migration.tool.extractor.service.MSAccessConnectionService;
+import com.database.migration.tool.extractor.model.DBMessage;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -20,7 +20,7 @@ public class WelcomePanel extends JPanel implements ActionListener {
     public WelcomePanel(JPanel rootPanel) {
         setBorder(new LineBorder(new Color(0, 0, 0)));
         this.rootPanel = rootPanel;
-        this.dbMessage = MSAccessConnect.getCurrentMsAccessConnection();
+        this.dbMessage = MSAccessConnectionService.getCurrentMsAccessConnection();
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
         setLayout(null);

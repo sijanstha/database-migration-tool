@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.scripts;
+package com.database.migration.tool.extractor.model;
 
 public class CMNDBConfig {
     private static String MYSQL_IP;

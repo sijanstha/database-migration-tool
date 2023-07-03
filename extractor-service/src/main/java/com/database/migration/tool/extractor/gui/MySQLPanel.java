@@ -2,8 +2,8 @@ package com.database.migration.tool.extractor.gui;
 
 import com.database.migration.tool.core.request.HandshakeRequest;
 import com.database.migration.tool.core.request.HandshakeResponse;
-import com.database.migration.tool.extractor.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.scripts.Utils;
+import com.database.migration.tool.extractor.model.CMNDBConfig;
+import com.database.migration.tool.extractor.utils.Utils;
 import com.database.migration.tool.extractor.config.MigratorServiceConfig;
 import com.database.migration.tool.migrator.sdk.MigratorServiceApi;
 import io.activej.inject.Injector;

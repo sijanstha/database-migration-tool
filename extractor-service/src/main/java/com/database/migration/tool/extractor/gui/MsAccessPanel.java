@@ -1,8 +1,8 @@
 package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.scripts.AppMessage;
+import com.database.migration.tool.extractor.model.CMNDBConfig;
+import com.database.migration.tool.extractor.service.MSAccessConnectionService;
+import com.database.migration.tool.extractor.model.AppMessage;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -121,7 +121,7 @@ public class MsAccessPanel extends JPanel implements ActionListener {
             }
             CMNDBConfig.setMSACCESS_PATH(path);
             CMNDBConfig.setMSACCESS_PWD(text);
-            AppMessage appMsg = MSAccessConnect.getCurrentMsAccessConnection();
+            AppMessage appMsg = MSAccessConnectionService.getCurrentMsAccessConnection();
             if (appMsg.getCODE() != 0) {
                 JOptionPane.showMessageDialog(this, appMsg.getMSG());
                 return;

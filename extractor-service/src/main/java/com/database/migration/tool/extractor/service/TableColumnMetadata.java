@@ -1,8 +1,7 @@
 package com.database.migration.tool.extractor.service;
 
-import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.scripts.AppMessage;
-import com.database.migration.tool.extractor.scripts.DBMessage;
+import com.database.migration.tool.extractor.model.AppMessage;
+import com.database.migration.tool.extractor.model.DBMessage;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,7 +19,7 @@ public class TableColumnMetadata {
 
     public AppMessage getTableMetadata() {
         AppMessage appMsg = new AppMessage();
-        DBMessage dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
+        DBMessage dbMsg = MSAccessConnectionService.getCurrentMsAccessConnection();
         if (dbMsg.getCODE() != 0) {
             appMsg.setCODE(dbMsg.getCODE());
             appMsg.setMSG(dbMsg.getMSG());

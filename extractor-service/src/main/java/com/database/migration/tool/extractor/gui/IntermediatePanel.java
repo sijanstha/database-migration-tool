@@ -1,8 +1,8 @@
 package com.database.migration.tool.extractor.gui;
 
 import com.database.migration.tool.extractor.service.TableColumnMetadata;
-import com.database.migration.tool.extractor.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.scripts.AppMessage;
+import com.database.migration.tool.extractor.model.CMNDBConfig;
+import com.database.migration.tool.extractor.model.AppMessage;
 
 import javax.swing.*;
 import java.awt.*;

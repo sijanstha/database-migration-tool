@@ -1,7 +1,7 @@
 package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.scripts.DBMessage;
+import com.database.migration.tool.extractor.service.MSAccessConnectionService;
+import com.database.migration.tool.extractor.model.DBMessage;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -23,7 +23,7 @@ public class JRootFrame extends JFrame {
         JHeaderPanel headerPanel = new JHeaderPanel();
         headerPanel.setBounds(0, 0, 550, 72);
         contentPane.add(headerPanel);
-        this.dbMessage = MSAccessConnect.getCurrentMsAccessConnection();
+        this.dbMessage = MSAccessConnectionService.getCurrentMsAccessConnection();
 
         welcomePanel = new WelcomePanel(contentPane);
         welcomePanel.setBounds(0, 61, 550, 368);
