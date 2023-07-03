@@ -7,8 +7,11 @@
 package com.database.migration.tool.extractor.service;
 
 import com.database.migration.tool.core.dto.*;
+import com.database.migration.tool.core.utils.StringUtils;
+import com.database.migration.tool.extractor.config.ApplicationBeanConfig;
 import com.database.migration.tool.extractor.model.CMNDBConfig;
 import com.google.gson.Gson;
+import io.activej.inject.Injector;
 
 import javax.swing.*;
 import java.sql.*;
@@ -19,18 +22,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class TableDataExtractor {
-    private final ArrayList<String> tableNameList;
+    private final List<String> selectedTables;
     private final Connection msAccessDbConnection;
     private final DataTypeMapperService dataTypeMapperService;
     private final Gson gson;
     private final ExecutorService executor;
     private final JTextArea jTextArea;
 
-    public TableDataExtractor(ArrayList<String> tableList, JTextArea textArea) {
-        this.tableNameList = tableList;
-        this.dataTypeMapperService = new DataTypeMapperService();
+    public TableDataExtractor(List<String> selectedTables, JTextArea textArea) {
+        Injector injector = Injector.of(new ApplicationBeanConfig());
+        this.selectedTables = selectedTables;
+        this.dataTypeMapperService = injector.getInstance(DataTypeMapperService.class);
+        this.gson = injector.getInstance(Gson.class);
         this.msAccessDbConnection = MSAccessConnectionService.getMsAccessDbConnection();
-        this.gson = new Gson();
         this.executor = Executors.newFixedThreadPool(5);
         this.jTextArea = textArea;
     }
@@ -44,16 +48,16 @@ public class TableDataExtractor {
 
     private List<Future<?>> extractAndProcessDbTable() {
         List<Future<?>> futures = new ArrayList<>();
-        for (int i = 0; i < tableNameList.size(); i++) {
+        for (int i = 0; i < selectedTables.size(); i++) {
             int finalI = i;
-            Future<?> future = executor.submit(() -> resolveTableStructureMetaData(tableNameList.get(finalI)));
+            Future<?> future = executor.submit(() -> resolveTableStructureMetaData(selectedTables.get(finalI)));
             futures.add(future);
         }
         return futures;
     }
 
     private List<Future<?>> extractAndProcessTableRecords(List<Future<?>> futures) {
-        for (int tableIdx = 0; tableIdx < tableNameList.size(); tableIdx++) {
+        for (int tableIdx = 0; tableIdx < selectedTables.size(); tableIdx++) {
             int finalTableIdx = tableIdx;
             Future<?> future = executor.submit(() -> resolveTableRecords(finalTableIdx));
             futures.add(future);
@@ -63,7 +67,7 @@ public class TableDataExtractor {
 
     private ColumnValueMeta resolveColumnValueMeta(ResultSet resultSet, String columnType, int columnIndex) throws SQLException {
         ColumnValueMeta columnValueMeta = new ColumnValueMeta();
-        if (resultSet.getString(columnIndex) == null || resultSet.getString(columnIndex) == "") {
+        if (!StringUtils.hasText(resultSet.getString(columnIndex))) {
             columnValueMeta.setValue(null);
         } else if (resultSet.getString(columnIndex).contains("'")) {
             int index = resultSet.getString(columnIndex).indexOf("'");
@@ -80,7 +84,7 @@ public class TableDataExtractor {
             msAccessDbConnection.setAutoCommit(false);
             Statement rst = msAccessDbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             rst.setFetchSize(500);
-            ResultSet rs = rst.executeQuery(String.format("SELECT * FROM %s", tableNameList.get(tableIdx)));
+            ResultSet rs = rst.executeQuery(String.format("SELECT * FROM %s", selectedTables.get(tableIdx)));
             ResultSetMetaData rsmd = rs.getMetaData();
             int totalColumnsCount = rsmd.getColumnCount();
 
@@ -98,7 +102,7 @@ public class TableDataExtractor {
                 tableContentMeta.setConnectionId(CMNDBConfig.getCONNECTION_ID());
                 tableContentMeta.setStatement(SqlStatementEnum.INSERT);
                 tableContentMeta.setType(SqlCommandEnum.DML);
-                tableContentMeta.setTableName(tableNameList.get(tableIdx));
+                tableContentMeta.setTableName(selectedTables.get(tableIdx));
                 tableContentMeta.setColumns(columns);
                 System.out.println(gson.toJson(tableContentMeta));
             }

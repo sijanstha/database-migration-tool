@@ -2,9 +2,9 @@ package com.database.migration.tool.extractor.gui;
 
 import com.database.migration.tool.core.request.HandshakeRequest;
 import com.database.migration.tool.core.request.HandshakeResponse;
+import com.database.migration.tool.core.utils.Utils;
 import com.database.migration.tool.extractor.model.CMNDBConfig;
-import com.database.migration.tool.extractor.utils.Utils;
-import com.database.migration.tool.extractor.config.MigratorServiceConfig;
+import com.database.migration.tool.extractor.config.ApplicationBeanConfig;
 import com.database.migration.tool.migrator.sdk.MigratorServiceApi;
 import io.activej.inject.Injector;
 
@@ -104,7 +104,7 @@ public class MySQLPanel extends JPanel implements ActionListener {
         lblMysqlImg.setIcon(new ImageIcon("res/mysql.png"));
         add(lblMysqlImg);
 
-        Injector injector = Injector.of(new MigratorServiceConfig());
+        Injector injector = Injector.of(new ApplicationBeanConfig());
         this.migratorServiceApi = injector.getInstance(MigratorServiceApi.class);
     }
 
