@@ -1,7 +1,12 @@
 package com.database.migration.tool.extractor.main;
 
 import com.database.migration.tool.core.utils.Utils;
+import com.database.migration.tool.extractor.config.ApplicationBeanConfig;
 import com.database.migration.tool.extractor.gui.JRootFrame;
+import com.database.migration.tool.extractor.service.KafkaMessageDispatcher;
+import com.database.migration.tool.extractor.service.TableDataExtractor;
+import io.activej.inject.Injector;
+import io.activej.inject.module.ModuleBuilder;
 
 import javax.swing.*;
 import java.awt.*;

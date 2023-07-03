@@ -10,7 +10,6 @@ import com.database.migration.tool.core.dto.*;
 import com.database.migration.tool.core.utils.StringUtils;
 import com.database.migration.tool.extractor.config.ApplicationBeanConfig;
 import com.database.migration.tool.extractor.model.CMNDBConfig;
-import com.google.gson.Gson;
 import io.activej.inject.Injector;
 
 import javax.swing.*;
@@ -25,7 +24,7 @@ public class TableDataExtractor {
     private final List<String> selectedTables;
     private final Connection msAccessDbConnection;
     private final DataTypeMapperService dataTypeMapperService;
-    private final Gson gson;
+    private final KafkaMessageDispatcher dispatcher;
     private final ExecutorService executor;
     private final JTextArea jTextArea;
 
@@ -33,7 +32,7 @@ public class TableDataExtractor {
         Injector injector = Injector.of(new ApplicationBeanConfig());
         this.selectedTables = selectedTables;
         this.dataTypeMapperService = injector.getInstance(DataTypeMapperService.class);
-        this.gson = injector.getInstance(Gson.class);
+        this.dispatcher = injector.getInstance(KafkaMessageDispatcher.class);
         this.msAccessDbConnection = MSAccessConnectionService.getMsAccessDbConnection();
         this.executor = Executors.newFixedThreadPool(5);
         this.jTextArea = textArea;
@@ -104,7 +103,7 @@ public class TableDataExtractor {
                 tableContentMeta.setType(SqlCommandEnum.DML);
                 tableContentMeta.setTableName(selectedTables.get(tableIdx));
                 tableContentMeta.setColumns(columns);
-                System.out.println(gson.toJson(tableContentMeta));
+                dispatcher.publishTableRecords(tableContentMeta);
             }
             rst.close();
             msAccessDbConnection.commit();
@@ -139,8 +138,7 @@ public class TableDataExtractor {
         tableStructureMeta.setPrimaryKeyColumn(primaryKeys.next() ? primaryKeys.getString("COLUMN_NAME") : null);
         tableStructureMeta.setTableName(tableName);
         tableStructureMeta.setColumnMetaData(columnStructureMetas);
-        // TODO: send this tableStructureMeta to Kafka topic
-        System.out.println(Thread.currentThread().getName() + " " + gson.toJson(tableStructureMeta));
+        dispatcher.publishTableStructure(tableStructureMeta);
         jTextArea.append("\n" + "Processing for table: " + tableName);
         columnsMetaDataResultSet.close();
         return tableStructureMeta;
