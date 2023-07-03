@@ -1,12 +1,11 @@
-package com.database.migration.tool.migrator.service;
-
+package com.database.migration.tool.ingestor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Application {
+public class IngestApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class);
+        SpringApplication.run(IngestApplication.class);
     }
 }

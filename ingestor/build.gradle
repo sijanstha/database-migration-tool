@@ -12,7 +12,8 @@ dependencies {
     implementation project(':core')
     implementation project(path: ':migrator-sdk')
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    implementation 'org.springframework.kafka:spring-kafka:3.0.7'
 }
 
 test {

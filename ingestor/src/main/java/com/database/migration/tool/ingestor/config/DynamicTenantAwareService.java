@@ -57,8 +57,10 @@ public class DynamicTenantAwareService extends AbstractRoutingDataSource {
 
     public void registerTenantDatasource(String connectionId) {
         if (!tenants.containsKey(connectionId)) {
+            log.info("setting up tenant with connection id: {}", connectionId);
             try {
                 TenantInfoResponse tenantInfo = migratorServiceApi.getTenantInfo(connectionId);
+                log.info("got tenant info response: {}", tenantInfo);
                 this.tenants.computeIfAbsent(tenantInfo.getConnectionId(), k -> buildDataSource(tenantInfo));
             } catch (FeignException exception) {
                 log.error("got exception while fetching tenant info {}", exception.getMessage());
