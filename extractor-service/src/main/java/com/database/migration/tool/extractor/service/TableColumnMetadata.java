@@ -1,8 +1,8 @@
-package com.database.migration.tool.extractor.service.dbtabledata;
+package com.database.migration.tool.extractor.service;
 
-import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.service.scripts.AppMessage;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
+import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.scripts.AppMessage;
+import com.database.migration.tool.extractor.scripts.DBMessage;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,21 +15,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TableColumnMetadata {
-
-    private Connection con;
-    private String table[] = {"TABLE"};
-    private ArrayList<String> tableArray = new ArrayList<String>();
-    private DBMessage dbMsg;
+    private final String[] table = {"TABLE"};
+    private final ArrayList<String> tableArray = new ArrayList<>();
 
     public AppMessage getTableMetadata() {
         AppMessage appMsg = new AppMessage();
-        dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
+        DBMessage dbMsg = MSAccessConnect.getCurrentMsAccessConnection();
         if (dbMsg.getCODE() != 0) {
             appMsg.setCODE(dbMsg.getCODE());
             appMsg.setMSG(dbMsg.getMSG());
             return appMsg;
         }
-        con = dbMsg.getDbCon();
+        Connection con = dbMsg.getDbCon();
         try {
             DatabaseMetaData meta = con.getMetaData();
             ResultSet res = meta.getTables(null, null, "%", table);
@@ -55,12 +52,9 @@ public class TableColumnMetadata {
                 }
                 fw.append("\n");
             }
-            //con.close();
             fw.close();
             appMsg.setCODE(0);
             appMsg.setMSG("Tables Metadata Written Successfully");
-            //System.out.println("Tables Metadata Written Successfully");
-
         } catch (IOException e) {
             appMsg.setCODE(102);
             appMsg.setMSG(e.getMessage());

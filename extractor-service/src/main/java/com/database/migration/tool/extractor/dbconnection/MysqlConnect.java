@@ -1,7 +1,7 @@
-package com.database.migration.tool.extractor.service.dbconnection;
+package com.database.migration.tool.extractor.dbconnection;
 
-import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
+import com.database.migration.tool.extractor.scripts.CMNDBConfig;
+import com.database.migration.tool.extractor.scripts.DBMessage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

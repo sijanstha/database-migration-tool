@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.service.config;
+package com.database.migration.tool.extractor.config;
 
 import com.database.migration.tool.migrator.sdk.MigratorServiceApi;
 import com.database.migration.tool.migrator.sdk.MigratorServiceApiConfig;

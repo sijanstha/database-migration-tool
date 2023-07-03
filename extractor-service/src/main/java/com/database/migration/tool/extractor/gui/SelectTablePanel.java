@@ -1,6 +1,6 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.service.dbtabledata.TableColumnMetaExtractor;
+import com.database.migration.tool.extractor.service.TableColumnMetaExtractor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

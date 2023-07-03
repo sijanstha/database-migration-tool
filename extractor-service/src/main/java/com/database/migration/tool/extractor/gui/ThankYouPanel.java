@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
 import javax.swing.*;
 import java.awt.*;

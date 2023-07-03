@@ -4,12 +4,11 @@
  Created On: 23 july, 2017
  Modified On: 24 july, 2017
  */
-package com.database.migration.tool.extractor.service.dbtabledata;
+package com.database.migration.tool.extractor.service;
 
 import com.database.migration.tool.core.dto.*;
-import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.service.service.DataTypeMapperService;
+import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.scripts.CMNDBConfig;
 import com.google.gson.Gson;
 
 import javax.swing.*;
@@ -21,13 +20,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class TableDataExtractor {
-    private ArrayList<String> tableNameList;
-    private Connection msAccessDbConnection;
-    private DataTypeMapperService dataTypeMapperService;
-    private Gson gson;
-    private ExecutorService executor;
-    private List<Future<?>> futures;
-    private JTextArea jTextArea;
+    private final ArrayList<String> tableNameList;
+    private final Connection msAccessDbConnection;
+    private final DataTypeMapperService dataTypeMapperService;
+    private final Gson gson;
+    private final ExecutorService executor;
+    private final JTextArea jTextArea;
 
     public TableDataExtractor(ArrayList<String> tableList, JTextArea textArea) {
         this.tableNameList = tableList;
@@ -35,31 +33,33 @@ public class TableDataExtractor {
         this.msAccessDbConnection = MSAccessConnect.getMsAccessDbConnection();
         this.gson = new Gson();
         this.executor = Executors.newFixedThreadPool(5);
-        this.futures = new ArrayList<>();
         this.jTextArea = textArea;
     }
 
     public List<Future<?>> databaseMigrator() throws ExecutionException, InterruptedException {
-        this.extractAndProcessDbTable();
-        this.extractAndProcessTableRecords();
+        List<Future<?>> futures = this.extractAndProcessDbTable();
+        this.extractAndProcessTableRecords(futures);
         executor.shutdown();
         return futures;
     }
 
-    private void extractAndProcessDbTable() {
+    private List<Future<?>> extractAndProcessDbTable() {
+        List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < tableNameList.size(); i++) {
             int finalI = i;
             Future<?> future = executor.submit(() -> resolveTableStructureMetaData(tableNameList.get(finalI)));
             futures.add(future);
         }
+        return futures;
     }
 
-    private void extractAndProcessTableRecords() {
+    private List<Future<?>> extractAndProcessTableRecords(List<Future<?>> futures) {
         for (int tableIdx = 0; tableIdx < tableNameList.size(); tableIdx++) {
             int finalTableIdx = tableIdx;
             Future<?> future = executor.submit(() -> resolveTableRecords(finalTableIdx));
             futures.add(future);
         }
+        return futures;
     }
 
     private ColumnValueMeta resolveColumnValueMeta(ResultSet resultSet, String columnType, int columnIndex) throws SQLException {

@@ -1,12 +1,10 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
 import com.database.migration.tool.core.request.HandshakeRequest;
 import com.database.migration.tool.core.request.HandshakeResponse;
-import com.database.migration.tool.extractor.service.config.MigratorServiceConfig;
-import com.database.migration.tool.extractor.service.dbconnection.MysqlConnect;
-import com.database.migration.tool.extractor.service.scripts.CMNDBConfig;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
-import com.database.migration.tool.extractor.service.scripts.Utils;
+import com.database.migration.tool.extractor.scripts.CMNDBConfig;
+import com.database.migration.tool.extractor.scripts.Utils;
+import com.database.migration.tool.extractor.config.MigratorServiceConfig;
 import com.database.migration.tool.migrator.sdk.MigratorServiceApi;
 import io.activej.inject.Injector;
 
@@ -32,11 +30,9 @@ public class MySQLPanel extends JPanel implements ActionListener {
     private JTextField txtMysqlPort;
     private JTextField txtUname;
     private JPasswordField txtPwd;
-    private Utils util;
     private MigratorServiceApi migratorServiceApi;
 
     public MySQLPanel(JPanel rootPanel) {
-        util = new Utils();
         this.rootPanel = rootPanel;
         setBackground(Color.WHITE);
         setBounds(0, 72, 550, 368);
@@ -127,7 +123,7 @@ public class MySQLPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Error! Provide Destination Database Name");
                 return;
             }
-            if (!util.isAlphaNumeric(dbName)) {
+            if (!Utils.isAlphaNumeric(dbName)) {
                 JOptionPane.showMessageDialog(this, "Error! Cannot accept invalid characters for DB Name");
                 return;
             }

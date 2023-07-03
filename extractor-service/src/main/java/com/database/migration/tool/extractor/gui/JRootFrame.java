@@ -1,7 +1,7 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
+import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.scripts.DBMessage;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -12,10 +12,9 @@ public class JRootFrame extends JFrame {
 
     private JPanel contentPane;
     private WelcomePanel welcomePanel;
-    private ErrorTableListPanel errorPanel;
     private DBMessage dbMessage;
 
-    public JRootFrame(int flag) {
+    public JRootFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(350, 150, 550, 440);
         contentPane = new JPanel();
@@ -26,15 +25,9 @@ public class JRootFrame extends JFrame {
         contentPane.add(headerPanel);
         this.dbMessage = MSAccessConnect.getCurrentMsAccessConnection();
 
-        if (flag == 0) {
-            welcomePanel = new WelcomePanel(contentPane);
-            welcomePanel.setBounds(0, 61, 550, 368);
-            contentPane.add(welcomePanel);
-        } else {
-            errorPanel = new ErrorTableListPanel(contentPane);
-            errorPanel.setBounds(0, 61, 550, 368);
-            contentPane.add(errorPanel);
-        }
+        welcomePanel = new WelcomePanel(contentPane);
+        welcomePanel.setBounds(0, 61, 550, 368);
+        contentPane.add(welcomePanel);
 
         addWindowListener(new WindowAdapter() {
             @Override

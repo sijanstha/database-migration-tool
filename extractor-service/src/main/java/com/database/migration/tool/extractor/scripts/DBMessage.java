@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.service.scripts;
+package com.database.migration.tool.extractor.scripts;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.service.dbtabledata.TableDataExtractor;
+import com.database.migration.tool.extractor.service.TableDataExtractor;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.service.dbtabledata;
+package com.database.migration.tool.extractor.service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,7 +10,7 @@ import java.util.Map;
 public class TableColumnMetaExtractor {
 
     private final String fileName = "table_meta_data.txt";
-    private Map<String, List<String>> columnsCache = new HashMap<>();
+    private final Map<String, List<String>> columnsCache = new HashMap<>();
 
     public String getColumnMetaData(String tableName) {
         List<String> columns = resolveColumns(tableName);

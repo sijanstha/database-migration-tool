@@ -1,7 +1,7 @@
-package com.database.migration.tool.extractor.service.gui;
+package com.database.migration.tool.extractor.gui;
 
-import com.database.migration.tool.extractor.service.dbconnection.MSAccessConnect;
-import com.database.migration.tool.extractor.service.scripts.DBMessage;
+import com.database.migration.tool.extractor.dbconnection.MSAccessConnect;
+import com.database.migration.tool.extractor.scripts.DBMessage;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

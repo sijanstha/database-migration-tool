@@ -1,4 +1,4 @@
-package com.database.migration.tool.extractor.service.service;
+package com.database.migration.tool.extractor.service;
 
 import com.database.migration.tool.core.dto.ColumnDataType;
 
